@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -18,9 +19,10 @@ import javax.sql.DataSource;
 public class ProjectSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http)throws Exception{
-        http.authorizeRequests()
+        http.csrf().disable()
+                .authorizeRequests()
                 .antMatchers("/api/v1/account/my-account","/api/v1/account/my-loan").authenticated()
-                .antMatchers("/api/v1/account/notice").permitAll()
+                .antMatchers("/api/v1/user/register","/api/v1/account/notice").permitAll()
                 .and().formLogin().and().httpBasic();
         return http.build();
     }
@@ -49,5 +51,11 @@ public class ProjectSecurityConfig {
 //    {
 //        return NoOpPasswordEncoder.getInstance();
 //    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder()
+    {
+        return new BCryptPasswordEncoder();
+    }
     //    -----------------------In memory user created ended--------------------
 }
